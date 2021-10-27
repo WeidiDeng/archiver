@@ -23,6 +23,7 @@ var (
 	implicitTopLevelFolder bool
 	stripComponents        int
 	continueOnError        bool
+	filenameEncoding       string
 	specifyFileType        string
 )
 
@@ -40,6 +41,7 @@ func init() {
 	flag.BoolVar(&implicitTopLevelFolder, "folder-safe", true, "If an archive does not have a single top-level folder, create one implicitly")
 	flag.IntVar(&stripComponents, "strip-components", 0, "Strip number of leading paths")
 	flag.BoolVar(&continueOnError, "allow-errors", true, "Log errors and continue processing")
+	flag.StringVar(&filenameEncoding, "filename-encoding", "", "Specify encoding if filename was not utf8 encoded")
 	flag.StringVar(&specifyFileType, "ext", "", "specify file type")
 }
 
@@ -266,6 +268,7 @@ func getFormat(subcommand string) (interface{}, error) {
 		v.ImplicitTopLevelFolder = implicitTopLevelFolder
 		v.StripComponents = stripComponents
 		v.ContinueOnError = continueOnError
+		v.FilenameEncoding = filenameEncoding
 	case *archiver.Gz:
 		v.CompressionLevel = compressionLevel
 	case *archiver.Brotli:
