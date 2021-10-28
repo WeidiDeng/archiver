@@ -257,6 +257,7 @@ func (z *Zip) extractNext(to string) error {
 		return fmt.Errorf("expected header to be zip.FileHeader but was %T", f.Header)
 	}
 
+	header.Name = z.DecodeFileName(header)
 	errPath := z.CheckPath(to, header.Name)
 	if errPath != nil {
 		return fmt.Errorf("checking path traversal attempt: %v", errPath)
@@ -276,7 +277,7 @@ func (z *Zip) extractNext(to string) error {
 }
 
 func (z *Zip) extractFile(f File, to string, header *zip.FileHeader) error {
-	to = filepath.Join(to, z.DecodeFileName(*header))
+	to = filepath.Join(to, header.Name)
 
 	// if a directory, no content; simply make the directory and return
 	if f.IsDir() {
@@ -587,8 +588,6 @@ func (z *Zip) Extract(source, target, destination string) error {
 			return fmt.Errorf("expected header to be zip.FileHeader but was %T", f.Header)
 		}
 
-		zfh.Name = z.DecodeFileName(zfh)
-
 		// importantly, cleaning the path strips tailing slash,
 		// which must be appended to folders within the archive
 		name := path.Clean(zfh.Name)
@@ -606,6 +605,7 @@ func (z *Zip) Extract(source, target, destination string) error {
 				return fmt.Errorf("relativizing paths: %v", err)
 			}
 			joined := filepath.Join(destination, end)
+			zfh.Name = ""
 
 			err = z.extractFile(f, joined, &zfh)
 			if err != nil {
