@@ -361,6 +361,12 @@ func (r *Rar) Extract(source, target, destination string) error {
 			// either this is the exact file we want, or is
 			// in the directory we want to extract
 
+			// rar directory is arranged last
+			targetDirPath = path.Dir(target)
+			if !f.IsDir() && target == name {
+				targetDirPath = ""
+			}
+
 			// build the filename we will extract to
 			end, err := filepath.Rel(targetDirPath, th.Name)
 			if err != nil {
